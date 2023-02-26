@@ -6,9 +6,28 @@ import gleam/otp/task
 import gleam/result
 import gleam/string
 
+// From gleam_stdlib docs:
+//
 // A `Task` is an asynchronous computation.
 // Other languages may call these "futures" or "promises".
 // In Gleam OTP, they were inspired by Elixir's `Task` module.
+//
+// There are two important things to consider when using async:
+//
+// * If you are using async tasks, you must await a reply as they are always sent.
+//
+// * async tasks link the caller and the spawned process. This means that, if the
+// caller crashes, the task will crash too and vice-versa. This is on purpose: if
+// the process meant to receive the result no longer exists, there is no purpose
+// in completing the computation.
+
+/// concurrent_map runs the given function on each element of the list in parallel.
+/// This is rather naive, given that it will spawn a task for each element.
+pub fn concurrent_map(l: List(a), f: fn(a) -> b) -> List(b) {
+  l
+  |> list.map(fn(x) { task.async(fn() { f(x) }) })
+  |> list.map(task.await(_, 5000))
+}
 
 /// count_words returns a map of words to their count in the given text.
 pub fn count_words(text: String) -> Map(String, Int) {
@@ -55,10 +74,4 @@ pub fn count_words_in_files(
   results
   |> list.filter_map(function.identity)
   |> list.fold(map.new(), map.merge)
-}
-
-pub fn concurrent_map(l: List(a), f: fn(a) -> b) -> List(b) {
-  l
-  |> list.map(fn(x) { task.async(fn() { f(x) }) })
-  |> list.map(task.await(_, 5000))
 }

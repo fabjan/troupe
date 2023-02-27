@@ -6,20 +6,13 @@ import gleam/otp/task
 import gleam/result
 import gleam/string
 
-// From gleam_stdlib docs:
+// A `Task` is an asynchronous computation, other languages may call these
+// "futures" or "promises". In Gleam OTP, the implementation was inspired by
+// Elixir's `Task` module.
 //
-// A `Task` is an asynchronous computation.
-// Other languages may call these "futures" or "promises".
-// In Gleam OTP, they were inspired by Elixir's `Task` module.
-//
-// There are two important things to consider when using async:
-//
-// * If you are using async tasks, you must await a reply as they are always sent.
-//
-// * async tasks link the caller and the spawned process. This means that, if the
-// caller crashes, the task will crash too and vice-versa. This is on purpose: if
-// the process meant to receive the result no longer exists, there is no purpose
-// in completing the computation.
+// You give them a computation to calculate and they will run it in a separate
+// process. When you want the result, you can `await` it in the process that
+// created the task. In fact, you must await it eventually.
 
 /// concurrent_map runs the given function on each element of the list in parallel.
 /// This is rather naive, given that it will spawn a task for each element.

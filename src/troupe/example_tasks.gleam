@@ -1,11 +1,3 @@
-import gleam/erlang/file
-import gleam/function
-import gleam/list
-import gleam/map.{Map}
-import gleam/otp/task
-import gleam/result
-import gleam/string
-
 // A `Task` is an asynchronous computation, other languages may call these
 // "futures" or "promises". In Gleam OTP, the implementation was inspired by
 // Elixir's `Task` module.
@@ -13,6 +5,14 @@ import gleam/string
 // You give them a computation to calculate and they will run it in a separate
 // process. When you want the result, you can `await` it in the process that
 // created the task. In fact, you must await it eventually.
+
+import gleam/erlang/file
+import gleam/function
+import gleam/list
+import gleam/map.{Map}
+import gleam/otp/task
+import gleam/result
+import gleam/string
 
 /// concurrent_map runs the given function on each element of the list in parallel.
 /// This is rather naive, given that it will spawn a task for each element.

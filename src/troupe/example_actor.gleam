@@ -17,6 +17,8 @@ pub type Instrument {
   Counter(String, Int)
 }
 
+/// You can name the type whatever you want, but here I use "Request" to
+/// hint at how actors are used.
 pub type MeterRequest {
   CounterAdd(String, Int)
   GaugeSet(String, Int)
@@ -30,6 +32,7 @@ pub fn new_meter() -> Result(Subject(MeterRequest), StartError) {
 type MeterState =
   Map(String, Instrument)
 
+/// This is the main loop of this example actor.
 fn meter_loop(msg: MeterRequest, state: MeterState) -> Next(MeterState) {
   case msg {
     CounterAdd(name, value) -> increment_counter(name, value, state)

@@ -2,6 +2,10 @@
 
 A Gleam project kicking the OTP tires.
 
+[troupe.gleam](src/troupe.gleam) is just a command line running the code in:
+* [example_tasks.gleam](src/troupe/example_tasks.gleam)
+* [example_actor.gleam](src/troupe/example_actor.gleam)
+
 ## Quick start
 
 ```sh

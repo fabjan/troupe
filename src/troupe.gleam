@@ -1,5 +1,4 @@
 import gleam/erlang
-import gleam/erlang/process.{Subject}
 import gleam/int
 import gleam/io
 import gleam/list
@@ -18,6 +17,8 @@ pub fn main() {
   |> result.map_error(print_usage_and_exit)
 }
 
+/// main_cmd is just a wrapper around the various tests to run, see imported
+/// modules for more details.
 fn main_cmd(argv: List(String)) {
   use cmd <- command("troupe", "A program using OTP", argv)
   use duration, cmd <- opt.int(cmd, "duration", "Seconds to run each test", 1)
@@ -41,24 +42,15 @@ fn main_cmd(argv: List(String)) {
   Ok(Nil)
 }
 
-fn bench(what: String, f: fn() -> a, time_left_us: Int, iterations: Int) -> Int {
-  case 0 <= time_left_us {
-    True -> {
-      let start = erlang.system_time(erlang.Microsecond)
-      let _ = f()
-      let end = erlang.system_time(erlang.Microsecond)
-      let elapsed = end - start
-      bench(what, f, time_left_us - elapsed, iterations + 1)
-    }
-    False -> iterations
-  }
-}
-
+/// run_tasks runs tasks, see example_tasks.count_words_in_files for details.
+///
+/// Sorry for the mess, I just wanted to execute some code and
+/// print something "interesting". The microbenchmarking was
+/// an afterthought.
 fn run_tasks(duration_s: Int) -> Nil {
   let filenames = example_files()
   let file_count = list.length(filenames)
 
-  // convert to microseconds for bench helper
   let bench_time = duration_s * 1_000_000
 
   io.print(
@@ -142,15 +134,38 @@ fn run_tasks(duration_s: Int) -> Nil {
   )
 }
 
+/// run_actors shows how to talk to an actor, see example_actor for details.
+///
+/// Sorry for the mess, I just wanted to execute some code and
+/// print something "interesting". The microbenchmarking was
+/// an afterthought.
 pub fn run_actors(duration_s: Int) -> Nil {
   assert Ok(meter) = example_actor.new_meter()
 
   let bench_time = duration_s * 1_000_000
 
   io.print("Running actor benchmarks...")
-  let actor_iters = bench("Actor", fn() { poke_actor(meter) }, bench_time, 0)
+  let actor_iters =
+    bench(
+      "Actor",
+      fn() {
+        let instrument = pick_name()
+        let number = int.random(1, 100)
+        // actor.send is a helper function to send a message to an actor,
+        // not expecting a reply. In OTP this is a "cast".
+        case int.random(0, 10) {
+          0 -> actor.send(meter, example_actor.GaugeSet(instrument, number))
+          _ -> actor.send(meter, example_actor.CounterAdd(instrument, number))
+        }
+      },
+      bench_time,
+      0,
+    )
   io.println("Done!")
 
+  // actor.call is a helper function to call an actor and wait for a reply,
+  // to use it you must provide a function that transforms a reply subject
+  // into a request message. In OTP this is a "call".
   let counts =
     actor.call(meter, fn(reply) { example_actor.ReadAll(reply) }, 5000)
 
@@ -172,20 +187,24 @@ pub fn run_actors(duration_s: Int) -> Nil {
   )
 }
 
-fn poke_actor(meter: Subject(example_actor.MeterRequest)) {
-  let instrument = pick_name()
-  let number = int.random(1, 100)
-  case int.random(0, 10) {
-    0 -> actor.send(meter, example_actor.GaugeSet(instrument, number))
-    _ -> actor.send(meter, example_actor.CounterAdd(instrument, number))
-  }
-}
-
 fn pick_name() -> String {
   let alternatives = ["foo", "bar", "baz", "qux"]
   let index = int.random(0, list.length(alternatives))
   assert Ok(name) = list.at(alternatives, index)
   name
+}
+
+fn bench(what: String, f: fn() -> a, time_left_us: Int, iterations: Int) -> Int {
+  case 0 <= time_left_us {
+    True -> {
+      let start = erlang.system_time(erlang.Microsecond)
+      let _ = f()
+      let end = erlang.system_time(erlang.Microsecond)
+      let elapsed = end - start
+      bench(what, f, time_left_us - elapsed, iterations + 1)
+    }
+    False -> iterations
+  }
 }
 
 pub fn example_files() -> List(String) {

@@ -193,6 +193,11 @@ pub fn example_files() -> List(String) {
     "test/troupe_test.gleam",
     "build/packages/gleeunit/src/gleeunit/should.gleam",
     "build/packages/gleeunit/src/gleeunit.gleam",
+    "build/packages/outil/src/outil.gleam",
+    "build/packages/outil/src/outil/arg.gleam",
+    "build/packages/outil/src/outil/error.gleam",
+    "build/packages/outil/src/outil/help.gleam",
+    "build/packages/outil/src/outil/opt.gleam",
     "build/packages/gleam_stdlib/src/gleam",
     "build/packages/gleam_stdlib/src/gleam/bit_string.gleam",
     "build/packages/gleam_stdlib/src/gleam/list.gleam",
@@ -231,7 +236,7 @@ pub fn example_files() -> List(String) {
     "build/packages/gleam_erlang/src/gleam/erlang/os.gleam",
     "build/packages/gleam_erlang/src/gleam/erlang/process.gleam",
     "build/packages/gleam_erlang/src/gleam/erlang/charlist.gleam",
-    "src/troupe.gleam", "src/troupe/task.gleam", "src/troupe/actor.gleam",
-    "src/troupe/supervisor.gleam",
+    "src/troupe.gleam", "src/troupe/example_actor.gleam",
+    "src/troupe/example_tasks.gleam",
   ]
 }

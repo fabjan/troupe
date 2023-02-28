@@ -6,6 +6,22 @@ A Gleam project kicking the OTP tires.
 * [example_tasks.gleam](src/troupe/example_tasks.gleam)
 * [example_actor.gleam](src/troupe/example_actor.gleam)
 
+## Background
+
+I know OTP and Erlang, but translating that knowledge to the typed world of
+Gleam took some grokking.
+
+This repository can be viewed as a complement to this blog post I read and
+also recommend you read for explanations that are more fleshed out:
+https://code-change.nl/gleam-blog/20230225-gleam-otp.html
+
+I also perused the [gleam_otp docs] and followed its list under "How to
+understand the Gleam OTP library".
+
+`troupe` is my distillation of the above, to verify my understanding.
+
+[gleam_otp docs]: https://hexdocs.pm/gleam_otp/
+
 ## Quick start
 
 ```sh
